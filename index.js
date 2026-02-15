@@ -4,6 +4,7 @@ const elements = {
     searchBtn: document.getElementById("search-btn"),
     themeToggle: document.getElementById("theme-toggle"),
     statusMsg: document.getElementById("status-msg"),
+    progressSection: document.querySelector(".progress"),
     statsCards: document.querySelector(".stats-cards"),
     progress: {
         easy: document.querySelector(".easy-progress"),
@@ -27,6 +28,11 @@ function setStatus(message, isError = false) {
 function setLoading(isLoading) {
     elements.searchBtn.disabled = isLoading;
     elements.searchBtn.textContent = isLoading ? "Searching..." : "Search";
+}
+
+function setResultsVisible(isVisible) {
+    elements.progressSection.hidden = !isVisible;
+    elements.statsCards.hidden = !isVisible;
 }
 
 function calculatePercent(solved, total) {
@@ -116,20 +122,24 @@ async function handleSearch(event) {
     const username = elements.input.value.trim();
     if (!username) {
         setStatus("Please enter a username.", true);
+        setResultsVisible(false);
         return;
     }
 
     setLoading(true);
     setStatus("Fetching profile...");
+    setResultsVisible(false);
 
     try {
         const data = await fetchLeetCodeData(username);
         updateProgress(data);
         updateCards(data);
+        setResultsVisible(true);
         setStatus(`Showing results for ${username}.`);
     } catch (error) {
         setStatus(error.message || "Unable to fetch data.", true);
         elements.statsCards.innerHTML = "";
+        setResultsVisible(false);
     } finally {
         setLoading(false);
     }
@@ -137,6 +147,7 @@ async function handleSearch(event) {
 
 function init() {
     initTheme();
+    setResultsVisible(false);
     elements.form.addEventListener("submit", handleSearch);
 }
 
