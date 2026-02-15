@@ -59,10 +59,10 @@ body {
 
 .dashboard {
     background: var(--surface);
-    border: 1px solid var(--stroke);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--radius);
     backdrop-filter: blur(10px);
-    box-shadow: var(--shadow);
+    box-shadow: 0 22px 56px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 161, 22, 0.16);
     padding: clamp(1rem, 2.4vw, 1.8rem);
     display: grid;
     gap: 1.2rem;
@@ -159,7 +159,8 @@ h1 {
 
 #search-btn:hover {
     transform: translateY(-1px);
-    filter: saturate(1.08);
+    filter: saturate(1.2) brightness(1.05);
+    box-shadow: 0 10px 24px rgba(255, 122, 0, 0.38);
 }
 
 .status-msg {
@@ -175,14 +176,16 @@ h1 {
 }
 
 .circle {
-    min-height: 138px;
-    border-radius: 16px;
-    border: 1px solid var(--stroke);
-    display: grid;
-    place-items: center;
+    min-height: 120px;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    background: #1b1f2a;
-    padding: 0.8rem;
+    background: transparent;
+    padding: 0.2rem;
+    box-shadow: none;
 }
 
 .circle span {
@@ -195,32 +198,29 @@ h1 {
     font-weight: 700;
     background: conic-gradient(var(--ring-color) var(--progress-degree, 0%), var(--track-color) 0%);
     margin-bottom: 0.45rem;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.03), 0 8px 18px rgba(0, 0, 0, 0.45);
 }
 
 .easy-progress {
     --ring-color: var(--easy);
-    --track-color: rgba(0, 184, 163, 0.2);
-    border-color: rgba(0, 184, 163, 0.45);
-    background: linear-gradient(160deg, rgba(0, 184, 163, 0.14), rgba(27, 31, 42, 0.9));
+    --track-color: rgba(0, 184, 163, 0.28);
 }
 
 .medium-progress {
     --ring-color: var(--medium);
-    --track-color: rgba(255, 192, 30, 0.2);
-    border-color: rgba(255, 192, 30, 0.5);
-    background: linear-gradient(160deg, rgba(255, 192, 30, 0.14), rgba(27, 31, 42, 0.9));
+    --track-color: rgba(255, 192, 30, 0.3);
 }
 
 .hard-progress {
     --ring-color: var(--hard);
-    --track-color: rgba(255, 55, 95, 0.2);
-    border-color: rgba(255, 55, 95, 0.5);
-    background: linear-gradient(160deg, rgba(255, 55, 95, 0.14), rgba(27, 31, 42, 0.9));
+    --track-color: rgba(255, 55, 95, 0.3);
 }
 
 .circle p {
-    font-weight: 600;
+    display: block;
+    font-weight: 700;
     color: #d9e1f0;
+    margin-top: 0.05rem;
 }
 
 .metrics-grid {
@@ -237,6 +237,7 @@ h1 {
     padding: 0.85rem;
     text-align: center;
     font-weight: 700;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.38);
 }
 
 .card span {
@@ -245,6 +246,84 @@ h1 {
     color: var(--muted);
     font-weight: 600;
     font-size: 0.9rem;
+}
+
+#total-card,
+#ranking-card,
+#contribution-card {
+    position: relative;
+    overflow: hidden;
+    border-width: 2px;
+    border-radius: 999px;
+    border-color: rgba(255, 161, 22, 0.82);
+    background: linear-gradient(155deg, rgba(255, 161, 22, 0.38), rgba(27, 31, 42, 0.9));
+    box-shadow: 0 0 0 1px rgba(255, 161, 22, 0.36), 0 14px 28px rgba(255, 161, 22, 0.26);
+}
+
+#total-card::before,
+#ranking-card::before,
+#contribution-card::before {
+    content: "";
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    top: -70px;
+    right: -62px;
+    border-radius: 999px;
+    opacity: 0.4;
+    pointer-events: none;
+    background: rgba(255, 161, 22, 0.9);
+}
+
+#easy-card {
+    border-color: rgba(0, 184, 163, 0.55);
+    background: linear-gradient(155deg, rgba(0, 184, 163, 0.2), rgba(27, 31, 42, 0.92));
+}
+
+#easy-card span {
+    color: #9ff3e8;
+}
+
+#medium-card {
+    border-color: rgba(255, 192, 30, 0.55);
+    background: linear-gradient(155deg, rgba(255, 192, 30, 0.2), rgba(27, 31, 42, 0.92));
+}
+
+#medium-card span {
+    color: #ffe39a;
+}
+
+#hard-card {
+    border-color: rgba(255, 55, 95, 0.55);
+    background: linear-gradient(155deg, rgba(255, 55, 95, 0.2), rgba(27, 31, 42, 0.92));
+}
+
+#hard-card span {
+    color: #ffb0c2;
+}
+
+#total-card {
+    border-radius: 999px;
+}
+
+#total-card span {
+    color: #ffe6c0;
+}
+
+#ranking-card {
+    border-radius: 999px;
+}
+
+#ranking-card span {
+    color: #ffe6c0;
+}
+
+#contribution-card {
+    border-radius: 999px;
+}
+
+#contribution-card span {
+    color: #ffe6c0;
 }
 
 @media (max-width: 900px) {
@@ -273,7 +352,7 @@ h1 {
     }
 
     .circle {
-        min-height: 126px;
+        min-height: 114px;
     }
 }
 

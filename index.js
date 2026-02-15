@@ -27,6 +27,7 @@ const elements = {
 };
 
 const API_BASE = "https://leetcode-api-faisalshohag.vercel.app";
+let activeUsername = "";
 
 function toNumber(value, fallback = 0) {
     const numeric = Number(value);
@@ -58,6 +59,7 @@ function setResultsVisible(isVisible) {
 
 function resetResults() {
     setResultsVisible(false);
+    activeUsername = "";
     elements.labels.easy.textContent = "0%";
     elements.labels.medium.textContent = "0%";
     elements.labels.hard.textContent = "0%";
@@ -185,6 +187,7 @@ async function handleSearch(event) {
 
     try {
         const data = await fetchLeetCodeData(username);
+        activeUsername = username;
         updateProgress(data);
         setResultsVisible(true);
         setStatus(`Showing results for ${username}.`);
