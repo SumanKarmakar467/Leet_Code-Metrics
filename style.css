@@ -271,6 +271,13 @@ h1 {
     gap: 0.75rem;
 }
 
+.external-summary {
+    width: min(900px, 100%);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
 .card {
     border: 1px solid var(--stroke);
     background: var(--surface-strong);
@@ -280,6 +287,8 @@ h1 {
     text-align: center;
     font-weight: 700;
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.38);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease,
+        filter 0.22s ease;
 }
 
 .card span {
@@ -288,6 +297,52 @@ h1 {
     color: var(--muted);
     font-weight: 600;
     font-size: 0.9rem;
+    transition: color 0.22s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    filter: saturate(1.08);
+}
+
+#easy-card:hover {
+    border-color: rgba(0, 184, 163, 0.82);
+    box-shadow: 0 0 0 1px rgba(0, 184, 163, 0.34), 0 16px 30px rgba(0, 184, 163, 0.24);
+}
+
+#easy-card:hover span {
+    color: #b4fff5;
+}
+
+#medium-card:hover {
+    border-color: rgba(255, 192, 30, 0.82);
+    box-shadow: 0 0 0 1px rgba(255, 192, 30, 0.34), 0 16px 30px rgba(255, 192, 30, 0.24);
+}
+
+#medium-card:hover span {
+    color: #ffecb7;
+}
+
+#hard-card:hover {
+    border-color: rgba(255, 55, 95, 0.82);
+    box-shadow: 0 0 0 1px rgba(255, 55, 95, 0.34), 0 16px 30px rgba(255, 55, 95, 0.24);
+}
+
+#hard-card:hover span {
+    color: #ffc4d2;
+}
+
+#total-card:hover,
+#ranking-card:hover,
+#contribution-card:hover {
+    border-color: rgba(255, 161, 22, 0.96);
+    box-shadow: 0 0 0 1px rgba(255, 161, 22, 0.46), 0 18px 34px rgba(255, 161, 22, 0.28);
+}
+
+#total-card:hover span,
+#ranking-card:hover span,
+#contribution-card:hover span {
+    color: #fff0d3;
 }
 
 #total-card,
@@ -370,7 +425,8 @@ h1 {
 
 @media (max-width: 900px) {
     .progress,
-    .metrics-grid {
+    .metrics-grid,
+    .external-summary {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
@@ -385,7 +441,8 @@ h1 {
     }
 
     .progress,
-    .metrics-grid {
+    .metrics-grid,
+    .external-summary {
         grid-template-columns: 1fr;
     }
 

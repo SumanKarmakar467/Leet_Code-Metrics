@@ -5,6 +5,7 @@ const elements = {
     statusMsg: document.getElementById("status-msg"),
     progressSection: document.querySelector(".progress"),
     metricsGrid: document.querySelector(".metrics-grid"),
+    externalSummary: document.querySelector(".external-summary"),
     progress: {
         easy: document.querySelector(".easy-progress"),
         medium: document.querySelector(".medium-progress"),
@@ -54,6 +55,11 @@ function setResultsVisible(isVisible) {
         elements.metricsGrid.style.display = isVisible ? "grid" : "none";
         elements.metricsGrid.setAttribute("aria-hidden", String(!isVisible));
     }
+    if (elements.externalSummary) {
+        elements.externalSummary.hidden = !isVisible;
+        elements.externalSummary.style.display = isVisible ? "grid" : "none";
+        elements.externalSummary.setAttribute("aria-hidden", String(!isVisible));
+    }
 }
 
 function resetResults() {
@@ -65,7 +71,7 @@ function resetResults() {
     elements.progress.easy.style.setProperty("--progress-degree", "0%");
     elements.progress.medium.style.setProperty("--progress-degree", "0%");
     elements.progress.hard.style.setProperty("--progress-degree", "0%");
-    elements.metricCards.easy.innerHTML = "0<span>Easy Solved</span>";
+    elements.metricCards.easy.innerHTML = "0/0<span>Easy Solved</span>";
     elements.metricCards.medium.innerHTML = "0<span>Medium Solved</span>";
     elements.metricCards.hard.innerHTML = "0<span>Hard Solved</span>";
     elements.metricCards.total.innerHTML = "0<span>Total Solved</span>";
@@ -93,7 +99,7 @@ function updateProgress(data) {
     elements.labels.medium.textContent = `${values.medium}%`;
     elements.labels.hard.textContent = `${values.hard}%`;
 
-    elements.metricCards.easy.innerHTML = `${data.easySolved ?? 0}<span>Easy Solved</span>`;
+    elements.metricCards.easy.innerHTML = `${data.easySolved ?? 0}/${data.totalEasy ?? 0}<span>Easy Solved</span>`;
     elements.metricCards.medium.innerHTML = `${data.mediumSolved ?? 0}<span>Medium Solved</span>`;
     elements.metricCards.hard.innerHTML = `${data.hardSolved ?? 0}<span>Hard Solved</span>`;
     elements.metricCards.total.innerHTML = `${data.totalSolved ?? 0}<span>Total Solved</span>`;
