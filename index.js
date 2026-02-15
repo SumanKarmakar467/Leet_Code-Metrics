@@ -79,14 +79,14 @@ function applyTheme(theme) {
 }
 
 function initTheme() {
-    let theme = "light";
+    let theme = "dark";
     try {
         const saved = localStorage.getItem("leetmetric-theme");
         if (saved === "light" || saved === "dark") {
             theme = saved;
         }
     } catch (error) {
-        theme = "light";
+        theme = "dark";
     }
 
     applyTheme(theme);
@@ -152,3 +152,4 @@ function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
+
