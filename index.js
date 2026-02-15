@@ -2,7 +2,6 @@ const elements = {
     form: document.getElementById("search-form"),
     input: document.getElementById("user-input"),
     searchBtn: document.getElementById("search-btn"),
-    themeToggle: document.getElementById("theme-toggle"),
     statusMsg: document.getElementById("status-msg"),
     progressSection: document.querySelector(".progress"),
     metricsGrid: document.querySelector(".metrics-grid"),
@@ -102,35 +101,8 @@ function updateProgress(data) {
     elements.metricCards.contribution.innerHTML = `${data.contributionPoint ?? 0}<span>Contribution</span>`;
 }
 
-function applyTheme(theme) {
-    const darkMode = theme === "dark";
-    document.body.classList.toggle("dark", darkMode);
-    elements.themeToggle.textContent = darkMode ? "Light" : "Dark";
-    elements.themeToggle.setAttribute("aria-pressed", String(darkMode));
-}
-
-function initTheme() {
-    let theme = "dark";
-    try {
-        const saved = localStorage.getItem("leetmetric-theme");
-        if (saved === "light" || saved === "dark") {
-            theme = saved;
-        }
-    } catch (error) {
-        theme = "dark";
-    }
-
-    applyTheme(theme);
-
-    elements.themeToggle.addEventListener("click", () => {
-        const next = document.body.classList.contains("dark") ? "light" : "dark";
-        applyTheme(next);
-        try {
-            localStorage.setItem("leetmetric-theme", next);
-        } catch (error) {
-            // Ignore storage failures.
-        }
-    });
+function enableDarkThemeOnly() {
+    document.body.classList.add("dark");
 }
 
 async function fetchLeetCodeData(username) {
@@ -200,7 +172,7 @@ async function handleSearch(event) {
 }
 
 function init() {
-    initTheme();
+    enableDarkThemeOnly();
     resetResults();
     elements.form.addEventListener("submit", handleSearch);
 }
