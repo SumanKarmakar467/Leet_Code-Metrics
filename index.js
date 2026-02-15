@@ -5,7 +5,7 @@ const elements = {
     themeToggle: document.getElementById("theme-toggle"),
     statusMsg: document.getElementById("status-msg"),
     progressSection: document.querySelector(".progress"),
-    statsCards: document.querySelector(".stats-cards"),
+    metricsGrid: document.querySelector(".metrics-grid"),
     progress: {
         easy: document.querySelector(".easy-progress"),
         medium: document.querySelector(".medium-progress"),
@@ -15,10 +15,23 @@ const elements = {
         easy: document.getElementById("easy-label"),
         medium: document.getElementById("medium-label"),
         hard: document.getElementById("hard-label")
+    },
+    metricCards: {
+        easy: document.getElementById("easy-card"),
+        medium: document.getElementById("medium-card"),
+        hard: document.getElementById("hard-card"),
+        total: document.getElementById("total-card"),
+        ranking: document.getElementById("ranking-card"),
+        contribution: document.getElementById("contribution-card")
     }
 };
 
 const API_BASE = "https://leetcode-api-faisalshohag.vercel.app";
+
+function toNumber(value, fallback = 0) {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : fallback;
+}
 
 function setStatus(message, isError = false) {
     elements.statusMsg.textContent = message;
@@ -31,8 +44,32 @@ function setLoading(isLoading) {
 }
 
 function setResultsVisible(isVisible) {
-    elements.progressSection.hidden = !isVisible;
-    elements.statsCards.hidden = !isVisible;
+    if (elements.progressSection) {
+        elements.progressSection.hidden = !isVisible;
+        elements.progressSection.style.display = isVisible ? "grid" : "none";
+        elements.progressSection.setAttribute("aria-hidden", String(!isVisible));
+    }
+    if (elements.metricsGrid) {
+        elements.metricsGrid.hidden = !isVisible;
+        elements.metricsGrid.style.display = isVisible ? "grid" : "none";
+        elements.metricsGrid.setAttribute("aria-hidden", String(!isVisible));
+    }
+}
+
+function resetResults() {
+    setResultsVisible(false);
+    elements.labels.easy.textContent = "0%";
+    elements.labels.medium.textContent = "0%";
+    elements.labels.hard.textContent = "0%";
+    elements.progress.easy.style.setProperty("--progress-degree", "0%");
+    elements.progress.medium.style.setProperty("--progress-degree", "0%");
+    elements.progress.hard.style.setProperty("--progress-degree", "0%");
+    elements.metricCards.easy.innerHTML = "0<span>Easy Solved</span>";
+    elements.metricCards.medium.innerHTML = "0<span>Medium Solved</span>";
+    elements.metricCards.hard.innerHTML = "0<span>Hard Solved</span>";
+    elements.metricCards.total.innerHTML = "0<span>Total Solved</span>";
+    elements.metricCards.ranking.innerHTML = "0<span>Ranking</span>";
+    elements.metricCards.contribution.innerHTML = "0<span>Contribution</span>";
 }
 
 function calculatePercent(solved, total) {
@@ -54,21 +91,13 @@ function updateProgress(data) {
     elements.labels.easy.textContent = `${values.easy}%`;
     elements.labels.medium.textContent = `${values.medium}%`;
     elements.labels.hard.textContent = `${values.hard}%`;
-}
 
-function updateCards(data) {
-    const cards = [
-        { title: "Total Solved", value: data.totalSolved ?? 0 },
-        { title: "Ranking", value: data.ranking ?? "N/A" },
-        { title: "Easy Solved", value: data.easySolved ?? 0 },
-        { title: "Medium Solved", value: data.mediumSolved ?? 0 },
-        { title: "Hard Solved", value: data.hardSolved ?? 0 },
-        { title: "Contribution", value: data.contributionPoint ?? 0 }
-    ];
-
-    elements.statsCards.innerHTML = cards
-        .map((card) => `<article class="card">${card.value}<span>${card.title}</span></article>`)
-        .join("");
+    elements.metricCards.easy.innerHTML = `${data.easySolved ?? 0}<span>Easy Solved</span>`;
+    elements.metricCards.medium.innerHTML = `${data.mediumSolved ?? 0}<span>Medium Solved</span>`;
+    elements.metricCards.hard.innerHTML = `${data.hardSolved ?? 0}<span>Hard Solved</span>`;
+    elements.metricCards.total.innerHTML = `${data.totalSolved ?? 0}<span>Total Solved</span>`;
+    elements.metricCards.ranking.innerHTML = `${data.ranking ?? "N/A"}<span>Ranking</span>`;
+    elements.metricCards.contribution.innerHTML = `${data.contributionPoint ?? 0}<span>Contribution</span>`;
 }
 
 function applyTheme(theme) {
@@ -108,8 +137,32 @@ async function fetchLeetCodeData(username) {
         throw new Error("Failed to fetch profile.");
     }
 
-    const data = await response.json();
-    if (!data || typeof data.totalSolved !== "number") {
+    const raw = await response.json();
+    const data = {
+        easySolved: toNumber(raw?.easySolved),
+        mediumSolved: toNumber(raw?.mediumSolved),
+        hardSolved: toNumber(raw?.hardSolved),
+        totalEasy: toNumber(raw?.totalEasy ?? raw?.easyTotal ?? raw?.easyQuestions),
+        totalMedium: toNumber(raw?.totalMedium ?? raw?.mediumTotal ?? raw?.mediumQuestions),
+        totalHard: toNumber(raw?.totalHard ?? raw?.hardTotal ?? raw?.hardQuestions),
+        totalSolved: toNumber(
+            raw?.totalSolved ??
+            (toNumber(raw?.easySolved) + toNumber(raw?.mediumSolved) + toNumber(raw?.hardSolved))
+        ),
+        ranking: raw?.ranking ?? "N/A",
+        contributionPoint: toNumber(raw?.contributionPoint ?? raw?.contributionPoints ?? raw?.contribution)
+    };
+
+    const hasAnyProgressData =
+        data.totalSolved > 0 ||
+        data.easySolved > 0 ||
+        data.mediumSolved > 0 ||
+        data.hardSolved > 0 ||
+        data.totalEasy > 0 ||
+        data.totalMedium > 0 ||
+        data.totalHard > 0;
+
+    if (!raw || !hasAnyProgressData) {
         throw new Error("User not found.");
     }
 
@@ -122,24 +175,22 @@ async function handleSearch(event) {
     const username = elements.input.value.trim();
     if (!username) {
         setStatus("Please enter a username.", true);
-        setResultsVisible(false);
+        resetResults();
         return;
     }
 
     setLoading(true);
     setStatus("Fetching profile...");
-    setResultsVisible(false);
+    resetResults();
 
     try {
         const data = await fetchLeetCodeData(username);
         updateProgress(data);
-        updateCards(data);
         setResultsVisible(true);
         setStatus(`Showing results for ${username}.`);
     } catch (error) {
         setStatus(error.message || "Unable to fetch data.", true);
-        elements.statsCards.innerHTML = "";
-        setResultsVisible(false);
+        resetResults();
     } finally {
         setLoading(false);
     }
@@ -147,9 +198,8 @@ async function handleSearch(event) {
 
 function init() {
     initTheme();
-    setResultsVisible(false);
+    resetResults();
     elements.form.addEventListener("submit", handleSearch);
 }
 
 document.addEventListener("DOMContentLoaded", init);
-
