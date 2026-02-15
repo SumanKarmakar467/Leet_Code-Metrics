@@ -13,6 +13,9 @@
     --hard: #ff375f;
     --shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
     --radius: 18px;
+    --grid-line: rgba(255, 161, 22, 0.08);
+    --grid-line-soft: rgba(148, 163, 184, 0.07);
+    --vignette: rgba(0, 0, 0, 0.36);
 }
 
 body.dark {
@@ -24,6 +27,9 @@ body.dark {
     --muted: #aab4c3;
     --stroke: rgba(248, 250, 252, 0.17);
     --shadow: 0 20px 46px rgba(0, 0, 0, 0.58);
+    --grid-line: rgba(255, 161, 22, 0.12);
+    --grid-line-soft: rgba(100, 116, 139, 0.13);
+    --vignette: rgba(0, 0, 0, 0.5);
 }
 
 * {
@@ -43,6 +49,30 @@ body {
     color: var(--text);
     line-height: 1.5;
     transition: background 0.3s ease, color 0.3s ease;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -2;
+    background:
+        radial-gradient(circle at 18% 14%, rgba(255, 161, 22, 0.22) 0%, transparent 32%),
+        radial-gradient(circle at 84% 76%, rgba(0, 184, 163, 0.17) 0%, transparent 34%),
+        repeating-linear-gradient(90deg, transparent 0 44px, var(--grid-line) 44px 45px),
+        repeating-linear-gradient(180deg, transparent 0 44px, var(--grid-line-soft) 44px 45px);
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background: radial-gradient(circle at center, transparent 35%, var(--vignette) 100%);
 }
 
 .page {
