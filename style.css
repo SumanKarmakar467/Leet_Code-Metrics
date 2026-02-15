@@ -79,8 +79,10 @@ body::after {
     min-height: 100vh;
     padding: clamp(1rem, 2.4vw, 2rem);
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 0.95rem;
 }
 
 .container {
@@ -117,6 +119,14 @@ body::after {
 h1 {
     font-size: clamp(1.35rem, 3vw, 2rem);
     line-height: 1.2;
+}
+
+.page-title {
+    margin-top: 0.25rem;
+    text-align: center;
+    color: #ffe3b5;
+    letter-spacing: 0.01em;
+    text-shadow: 0 10px 26px rgba(255, 161, 22, 0.22);
 }
 
 .subhead {
