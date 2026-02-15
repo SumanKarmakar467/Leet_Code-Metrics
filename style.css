@@ -208,6 +208,7 @@ h1 {
     background: transparent;
     padding: 0.2rem;
     box-shadow: none;
+    transition: transform 0.22s ease, filter 0.22s ease;
 }
 
 .circle span {
@@ -221,6 +222,7 @@ h1 {
     background: conic-gradient(var(--ring-color) var(--progress-degree, 0%), var(--track-color) 0%);
     margin-bottom: 0.45rem;
     box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.03), 0 8px 18px rgba(0, 0, 0, 0.45);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
 }
 
 .easy-progress {
@@ -243,6 +245,24 @@ h1 {
     font-weight: 700;
     color: #d9e1f0;
     margin-top: 0.05rem;
+    transition: color 0.22s ease, text-shadow 0.22s ease;
+}
+
+.circle:hover {
+    transform: translateY(-4px);
+    filter: saturate(1.12);
+}
+
+.circle:hover span {
+    transform: scale(1.04);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--ring-color) 20%, transparent),
+        0 12px 24px color-mix(in srgb, var(--ring-color) 32%, rgba(0, 0, 0, 0.3));
+    filter: brightness(1.05);
+}
+
+.circle:hover p {
+    color: #f7fbff;
+    text-shadow: 0 8px 18px color-mix(in srgb, var(--ring-color) 35%, transparent);
 }
 
 .metrics-grid {
