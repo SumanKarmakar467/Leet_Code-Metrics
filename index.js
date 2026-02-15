@@ -1,63 +1,143 @@
-document.addEventListener("DOMContentLoaded", () => {
+const elements = {
+    form: document.getElementById("search-form"),
+    input: document.getElementById("user-input"),
+    searchBtn: document.getElementById("search-btn"),
+    themeToggle: document.getElementById("theme-toggle"),
+    statusMsg: document.getElementById("status-msg"),
+    statsCards: document.querySelector(".stats-cards"),
+    progress: {
+        easy: document.querySelector(".easy-progress"),
+        medium: document.querySelector(".medium-progress"),
+        hard: document.querySelector(".hard-progress")
+    },
+    labels: {
+        easy: document.getElementById("easy-label"),
+        medium: document.getElementById("medium-label"),
+        hard: document.getElementById("hard-label")
+    }
+};
 
-    // Search button
-    document.getElementById("search-btn").addEventListener("click", async () => {
-        const username = document.getElementById("user-input").value.trim();
-        if (!username) return alert("Enter username!");
+const API_BASE = "https://leetcode-api-faisalshohag.vercel.app";
 
-        const url = `https://leetcode-api-faisalshohag.vercel.app/${username}`;
+function setStatus(message, isError = false) {
+    elements.statusMsg.textContent = message;
+    elements.statusMsg.style.color = isError ? "#dc2626" : "var(--muted)";
+}
 
-        try {
-            const res = await fetch(url);
-            const data = await res.json();
+function setLoading(isLoading) {
+    elements.searchBtn.disabled = isLoading;
+    elements.searchBtn.textContent = isLoading ? "Searching..." : "Search";
+}
 
-            if (!data?.totalSolved) {
-                alert("User not found");
-                return;
-            }
-
-            updateProgress(data);
-            updateCards(data);
-
-        } catch (err) {
-            alert("Fetch error");
-        }
-    });
-
-    // Theme toggle
-    const toggleBtn = document.getElementById("theme-toggle");
-
-    toggleBtn.addEventListener("click", () => {
-        document.body.classList.toggle("dark");
-        toggleBtn.textContent =
-            document.body.classList.contains("dark") ? "☀️" : "🌙";
-    });
-});
+function calculatePercent(solved, total) {
+    if (!total || total <= 0) return 0;
+    return Math.round((solved / total) * 100);
+}
 
 function updateProgress(data) {
-    const easy = Math.round((data.easySolved / data.totalEasy) * 100);
-    const medium = Math.round((data.mediumSolved / data.totalMedium) * 100);
-    const hard = Math.round((data.hardSolved / data.totalHard) * 100);
+    const values = {
+        easy: calculatePercent(data.easySolved, data.totalEasy),
+        medium: calculatePercent(data.mediumSolved, data.totalMedium),
+        hard: calculatePercent(data.hardSolved, data.totalHard)
+    };
 
-    document.querySelector(".easy-progress")
-        .style.setProperty("--progress-degree", `${easy}%`);
-    document.querySelector(".medium-progress")
-        .style.setProperty("--progress-degree", `${medium}%`);
-    document.querySelector(".hard-progress")
-        .style.setProperty("--progress-degree", `${hard}%`);
+    elements.progress.easy.style.setProperty("--progress-degree", `${values.easy}%`);
+    elements.progress.medium.style.setProperty("--progress-degree", `${values.medium}%`);
+    elements.progress.hard.style.setProperty("--progress-degree", `${values.hard}%`);
 
-    document.getElementById("easy-label").textContent = `${easy}%`;
-    document.getElementById("medium-label").textContent = `${medium}%`;
-    document.getElementById("hard-label").textContent = `${hard}%`;
+    elements.labels.easy.textContent = `${values.easy}%`;
+    elements.labels.medium.textContent = `${values.medium}%`;
+    elements.labels.hard.textContent = `${values.hard}%`;
 }
 
 function updateCards(data) {
-    document.querySelector(".stats-cards").innerHTML = `
-        <div class="card">Total Solved: ${data.totalSolved}</div>
-        <div class="card">Ranking: ${data.ranking}</div>
-        <div class="card">Easy: ${data.easySolved}</div>
-        <div class="card">Medium: ${data.mediumSolved}</div>
-        <div class="card">Hard: ${data.hardSolved}</div>
-        <div class="card">Contribution: ${data.contributionPoint}</div>
-    `;
+    const cards = [
+        { title: "Total Solved", value: data.totalSolved ?? 0 },
+        { title: "Ranking", value: data.ranking ?? "N/A" },
+        { title: "Easy Solved", value: data.easySolved ?? 0 },
+        { title: "Medium Solved", value: data.mediumSolved ?? 0 },
+        { title: "Hard Solved", value: data.hardSolved ?? 0 },
+        { title: "Contribution", value: data.contributionPoint ?? 0 }
+    ];
+
+    elements.statsCards.innerHTML = cards
+        .map((card) => `<article class="card">${card.value}<span>${card.title}</span></article>`)
+        .join("");
 }
+
+function applyTheme(theme) {
+    const darkMode = theme === "dark";
+    document.body.classList.toggle("dark", darkMode);
+    elements.themeToggle.textContent = darkMode ? "Light" : "Dark";
+    elements.themeToggle.setAttribute("aria-pressed", String(darkMode));
+}
+
+function initTheme() {
+    let theme = "light";
+    try {
+        const saved = localStorage.getItem("leetmetric-theme");
+        if (saved === "light" || saved === "dark") {
+            theme = saved;
+        }
+    } catch (error) {
+        theme = "light";
+    }
+
+    applyTheme(theme);
+
+    elements.themeToggle.addEventListener("click", () => {
+        const next = document.body.classList.contains("dark") ? "light" : "dark";
+        applyTheme(next);
+        try {
+            localStorage.setItem("leetmetric-theme", next);
+        } catch (error) {
+            // Ignore storage failures.
+        }
+    });
+}
+
+async function fetchLeetCodeData(username) {
+    const response = await fetch(`${API_BASE}/${encodeURIComponent(username)}`);
+    if (!response.ok) {
+        throw new Error("Failed to fetch profile.");
+    }
+
+    const data = await response.json();
+    if (!data || typeof data.totalSolved !== "number") {
+        throw new Error("User not found.");
+    }
+
+    return data;
+}
+
+async function handleSearch(event) {
+    event.preventDefault();
+
+    const username = elements.input.value.trim();
+    if (!username) {
+        setStatus("Please enter a username.", true);
+        return;
+    }
+
+    setLoading(true);
+    setStatus("Fetching profile...");
+
+    try {
+        const data = await fetchLeetCodeData(username);
+        updateProgress(data);
+        updateCards(data);
+        setStatus(`Showing results for ${username}.`);
+    } catch (error) {
+        setStatus(error.message || "Unable to fetch data.", true);
+        elements.statsCards.innerHTML = "";
+    } finally {
+        setLoading(false);
+    }
+}
+
+function init() {
+    initTheme();
+    elements.form.addEventListener("submit", handleSearch);
+}
+
+document.addEventListener("DOMContentLoaded", init);

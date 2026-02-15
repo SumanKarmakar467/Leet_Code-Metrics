@@ -3,46 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LeetMetric</title>
+    <meta name="description" content="Track LeetCode problem-solving progress with responsive charts and key stats.">
+    <title>LeetMetric Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <main class="page">
+        <section class="dashboard container">
+            <header class="dashboard-header">
+                <div>
+                    <p class="eyebrow">LeetCode Analytics</p>
+                    <h1>LeetMetric Dashboard</h1>
+                    <p class="subhead">Track solved counts, difficulty progress, and ranking in one place.</p>
+                </div>
+                <button id="theme-toggle" type="button" aria-pressed="false">Dark</button>
+            </header>
 
-    <button id="theme-toggle">🌙</button>
+            <form id="search-form" class="user-container" novalidate>
+                <label id="heading" for="user-input">Enter your LeetCode username</label>
+                <div class="user-input-container">
+                    <input
+                        type="text"
+                        placeholder="e.g. suman_karmakar"
+                        id="user-input"
+                        autocomplete="off"
+                        required
+                    >
+                    <button id="search-btn" type="submit">Search</button>
+                </div>
+                <p id="status-msg" class="status-msg" role="status" aria-live="polite"></p>
+            </form>
 
-    <div class="container">
-        <h1>LeetMetric</h1>
+            <section class="progress" aria-label="Difficulty progress circles" hidden>
+                <article class="easy-progress circle">
+                    <span id="easy-label">0%</span>
+                    <p>Easy</p>
+                </article>
 
-        <div class="user-container">
-            <p id="heading">Enter your username below:</p>
+                <article class="medium-progress circle">
+                    <span id="medium-label">0%</span>
+                    <p>Medium</p>
+                </article>
 
-            <div class="user-input-container">
-                <input type="text" placeholder="enter your username here" id="user-input">
-                <button id="search-btn">Search</button>
-            </div>
-        </div>
+                <article class="hard-progress circle">
+                    <span id="hard-label">0%</span>
+                    <p>Hard</p>
+                </article>
+            </section>
 
-        <div class="progress">
-            <div class="easy-progress circle">
-                <span id="easy-label">0%</span>
-                <p>Easy</p>
-            </div>
+            <section class="stats-cards" aria-label="LeetCode statistics cards" hidden></section>
+        </section>
+    </main>
 
-            <div class="medium-progress circle">
-                <span id="medium-label">0%</span>
-                <p>Medium</p>
-            </div>
-
-            <div class="hard-progress circle">
-                <span id="hard-label">0%</span>
-                <p>Hard</p>
-            </div>
-        </div>
-
-        <div class="stats-cards"></div>
-    </div>
-
-    <!-- IMPORTANT: Add defer -->
     <script src="index.js" defer></script>
 </body>
 </html>
