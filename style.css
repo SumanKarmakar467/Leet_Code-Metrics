@@ -29,7 +29,7 @@ body.dark {
     --shadow: 0 20px 46px rgba(0, 0, 0, 0.58);
     --grid-line: rgba(255, 161, 22, 0.12);
     --grid-line-soft: rgba(100, 116, 139, 0.13);
-    --vignette: rgba(0, 0, 0, 0.5);
+    --vignette: rgba(0, 0, 0, 0.5)
 }
 
 * {
