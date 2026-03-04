@@ -26,7 +26,7 @@ const elements = {
     }
 };
 
-const API_BASE = "https://leetcode-api-faisalshohag.vercel.app";
+const API_BAS = "https://leetcode-api-faisalshohag.vercel.app";
 let activeUsername = "";
 
 function toNumber(value, fallback = 0) {
