@@ -16,7 +16,7 @@ const elements = {
         medium: document.getElementById("medium-label"),
         hard: document.getElementById("hard-label")
     },
-    metricCads: {
+    metricCards: {
         easy: document.getElementById("easy-card"),
         medium: document.getElementById("medium-card"),
         hard: document.getElementById("hard-card"),
