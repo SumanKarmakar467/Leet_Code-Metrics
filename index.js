@@ -6,7 +6,7 @@ const elements = {
     progressSection: document.querySelector(".progress"),
     metricsGrid: document.querySelector(".metrics-grid"),
     externalSummary: document.querySelector(".external-summary"),
-    progress: {
+    progrss: {
         easy: document.querySelector(".easy-progress"),
         medium: document.querySelector(".medium-progress"),
         hard: document.querySelector(".hard-progress")
