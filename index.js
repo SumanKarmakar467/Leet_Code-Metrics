@@ -1,4 +1,4 @@
-const elemnts = {
+const elements = {
     form: document.getElementById("search-form"),
     input: document.getElementById("user-input"),
     searchBtn: document.getElementById("search-btn"),
