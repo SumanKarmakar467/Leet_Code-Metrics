@@ -5,7 +5,7 @@ const elements = {
     statusMsg: document.getElementById("status-msg"),
     progressSection: document.querySelector(".progress"),
     metricsGrid: document.querySelector(".metrics-grid"),
-    externalSummary: document.querySelector(".external-summary"),
+    externalSummary: docuent.querySelector(".external-summary"),
     progress: {
         easy: document.querySelector(".easy-progress"),
         medium: document.querySelector(".medium-progress"),
