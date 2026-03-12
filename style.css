@@ -38,7 +38,7 @@ body.dark {
     box-sizing: border-box;
 }
 
-hml,
+html,
 body {
     min-height: 100%;
 }
