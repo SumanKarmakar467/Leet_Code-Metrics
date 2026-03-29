@@ -1,5 +1,5 @@
 const elements = {
-    form: document.getElementById("search-form"),
+    form: document.getElementById("search-fom"),
     input: document.getElementById("user-input"),
     searchBtn: document.getElementById("search-btn"),
     statusMsg: document.getElementById("status-msg"),
