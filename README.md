@@ -1,22 +1,40 @@
-# 📊 LeetCode Metrics
+# LeetCode Metrics
 
-A web app that fetches and displays LeetCode problem-solving stats for any username. Enter a LeetCode handle and instantly view solved problems by difficulty, acceptance rate, and overall progress.
+LeetCode Metrics is now a full React.js app with a REST API layer and Vercel-ready deployment setup.
 
-## 🔗 Live Demo
-[leet-code-metrics-kd4b.vercel.app](https://leet-code-metrics-kd4b.vercel.app/)
+## Stack
+- React.js (Vite)
+- REST API (`/api/leetcode` as Vercel serverless function)
+- Vercel
 
-## 🛠️ Tech Stack
-- HTML5
-- CSS3
-- JavaScript (Fetch API, LeetCode public API)
+## Features
+- Search LeetCode profile by username
+- Easy/Medium/Hard solved counts
+- Progress rings by difficulty
+- Total solved, ranking, and contribution cards
 
-## ✨ Features
-- Live LeetCode stats lookup by username
-- Shows Easy / Medium / Hard solved counts
-- Clean dashboard-style UI
-- No login required
-
-## 🚀 Run Locally
+## Run Locally
 ```bash
-# Open index.html in your browser — no backend needed
+npm install
+npm run dev
 ```
+
+App URL in local dev: `http://localhost:5173`
+
+## REST API
+Endpoint:
+```bash
+GET /api/leetcode?username=<leetcode_username>
+```
+
+Example:
+```bash
+GET /api/leetcode?username=suman_karmakar
+```
+
+## Deploy To Vercel
+1. Push this repo to GitHub.
+2. Import the project in Vercel.
+3. Deploy with default Vite settings.
+
+Vercel will build the React app and serve the API route from `api/leetcode.js`.

@@ -1,69 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Track LeetCode problem-solving progress with responsive charts and key stats.">
-    <title>LeetMetric_Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <main class="page">
-        <h1 class="page-title">LeetMetric-Dashboard</h1>
-        <section class="dashboard container">
-            <header class="dashboard-header">
-                <div>
-                    <p class="eyebrow">LeetCode_Analytics</p>
-                    <p class="subhead">Track solved counts, difficulty progress, and ranking in one place.</p>
-                </div>
-            </header>
-
-            <form id="search-form" class="user-container" novalidate>
-                <label id="heading" for="user-input">Enter Your LeetCode Username</label>
-                <div class="user-input-container">
-                    <input
-                        type="text"
-                        placeholder="e.g. suman_karmakar"
-                        id="user-input"
-                        autocomplete="off"
-                        required
-                    >
-                    <button id="search-btn" type="submit">Search</button>
-                </div>
-                <p id="status-msg" class="status-msg" role="status" aria-live="polite"></p>
-            </form>
-
-            <section class="progress" aria-label="Difficulty progress circles" hidden>
-                <article class="easy-progress circle">
-                    <span id="easy-label">0%</span>
-                    <p>Easy</p>
-                </article>
-
-                <article class="medium-progress circle">
-                    <span id="medium-label">0%</span>
-                    <p>Medium</p>
-                </article>
-
-                <article class="hard-progress circle">
-                    <span id="hard-label">0%</span>
-                    <p>Hard</p>
-                </article>
-            </section>
-
-            <section class="metrics-grid" aria-label="LeetCode statistics cards" hidden>
-                <article class="card" id="easy-card">0<span>Easy Solved</span></article>
-                <article class="card" id="medium-card">0<span>Medium Solved</span></article>
-                <article class="card" id="hard-card">0<span>Hard Solved</span></article>
-            </section>
-        </section>
-
-        <section class="external-summary container" aria-label="Overall profile stats" hidden>
-            <article class="card" id="total-card">0<span>Total Solved</span></article>
-            <article class="card" id="ranking-card">0<span>Ranking</span></article>
-            <article class="card" id="contribution-card">0<span>Contribution</span></article>
-        </section>
-    </main>
-
-    <script src="index.js" defer></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Track LeetCode problem-solving progress with responsive charts and key stats."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%93%8A%3C/text%3E%3C/svg%3E"
+    />
+    <title>LeetMetric Dashboard</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
