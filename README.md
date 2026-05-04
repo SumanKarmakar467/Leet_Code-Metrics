@@ -1,4 +1,4 @@
-# LeetCode Metrics
+# LeetCode Merics
 
 LeetCode Metrics is now a full React.js app with a REST API layer and Vercel-ready deployment setup.
 
