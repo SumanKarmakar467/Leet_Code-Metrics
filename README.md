@@ -4,7 +4,7 @@ LeetCode Metrics is now a full React.js app with a REST API layer and Vercel-rea
 
 ## Stack
 - React.js (Vite)
-- REST API (`/api/leetcode` as Vercel serverless function)
+- REST API (`/api/leetcode` as Verel serverless function)
 - Vercel
 
 ## Features
