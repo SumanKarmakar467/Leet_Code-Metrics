@@ -19,7 +19,7 @@ npm install
 npm run dev
 ```
 
-App URL in local dev: `http://localhost:513`
+App URL in local dev: `http://localhost:5173`
 
 ## REST API
 Endpoint:
