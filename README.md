@@ -11,7 +11,7 @@ LeetCode Metrics is now a full React.js app with a REST API layer and Vercel-rea
 - Search LeetCode profile by usernae
 - Easy/Medium/Hard solved counts
 - Progress rings by difficulty
-- Total solved, ranking, and contribuion cards
+- Total solved, ranking, and contribution cards
 
 ## Run Locally
 ```bash
