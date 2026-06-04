@@ -307,6 +307,28 @@ export default function App() {
           <strong>Valid Parentheses</strong>
           <small>Stack</small>
         </article>
+        <article className="answer-snippet snippet-java">
+          <span>Java</span>
+          <code>
+            {`Map<Integer, Integer> seen = new HashMap<>();
+for (int i = 0; i < nums.length; i++) {
+  int need = target - nums[i];
+  if (seen.containsKey(need)) return new int[]{seen.get(need), i};
+  seen.put(nums[i], i);
+}`}
+          </code>
+        </article>
+        <article className="answer-snippet snippet-cpp">
+          <span>C++</span>
+          <code>
+            {`unordered_map<int, int> seen;
+for (int i = 0; i < nums.size(); i++) {
+  int need = target - nums[i];
+  if (seen.count(need)) return {seen[need], i};
+  seen[nums[i]] = i;
+}`}
+          </code>
+        </article>
         <div className="dsa-orbit orbit-one">
           <span />
           <span />
