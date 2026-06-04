@@ -282,6 +282,31 @@ export default function App() {
         <span className="algo-pill pill-one">HashMap</span>
         <span className="algo-pill pill-two">Stack</span>
         <span className="algo-pill pill-three">Graph BFS</span>
+        <article className="floating-question question-one">
+          <span>Easy</span>
+          <strong>Two Sum</strong>
+          <small>HashMap · O(n)</small>
+        </article>
+        <article className="floating-question question-two">
+          <span>Medium</span>
+          <strong>Longest Substring</strong>
+          <small>Sliding Window</small>
+        </article>
+        <article className="floating-question question-three">
+          <span>Hard</span>
+          <strong>Merge K Lists</strong>
+          <small>Heap · Linked List</small>
+        </article>
+        <article className="floating-question question-four">
+          <span>Medium</span>
+          <strong>Course Schedule</strong>
+          <small>Graph · BFS</small>
+        </article>
+        <article className="floating-question question-five">
+          <span>Easy</span>
+          <strong>Valid Parentheses</strong>
+          <small>Stack</small>
+        </article>
         <div className="dsa-orbit orbit-one">
           <span />
           <span />

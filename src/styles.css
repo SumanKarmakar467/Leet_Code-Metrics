@@ -153,6 +153,68 @@ body::after {
   animation: pillFloat 8s ease-in-out infinite;
 }
 
+.floating-question {
+  position: absolute;
+  width: clamp(150px, 14vw, 220px);
+  min-height: 92px;
+  padding: 0.78rem;
+  display: grid;
+  align-content: center;
+  gap: 0.22rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025)),
+    rgba(7, 10, 18, 0.58);
+  color: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 20px 60px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+  opacity: 0.58;
+  animation: questionFloat 11s ease-in-out infinite;
+}
+
+.floating-question::before {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(255, 161, 22, 0.18), transparent);
+  opacity: 0;
+  transform: translateX(-80%);
+  animation: questionScan 6s ease-in-out infinite;
+}
+
+.floating-question span,
+.floating-question strong,
+.floating-question small {
+  position: relative;
+  z-index: 1;
+}
+
+.floating-question span {
+  width: fit-content;
+  padding: 0.18rem 0.48rem;
+  border-radius: 999px;
+  color: #111827;
+  background: var(--question-tone, var(--accent));
+  font-size: 0.66rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.floating-question strong {
+  font-size: clamp(0.82rem, 1.2vw, 1rem);
+  line-height: 1.2;
+}
+
+.floating-question small {
+  color: rgba(255, 255, 255, 0.52);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 0.72rem;
+}
+
 .rain-one {
   left: 12%;
   animation-delay: -5s;
@@ -185,6 +247,44 @@ body::after {
   bottom: 18%;
   border-color: rgba(139, 92, 246, 0.36);
   animation-delay: -4s;
+}
+
+.question-one {
+  top: 13%;
+  left: 23%;
+  --question-tone: var(--easy);
+  animation-delay: -1s;
+}
+
+.question-two {
+  top: 16%;
+  right: 24%;
+  --question-tone: var(--medium);
+  animation-delay: -5s;
+}
+
+.question-three {
+  bottom: 13%;
+  left: 30%;
+  --question-tone: var(--hard);
+  animation-duration: 13s;
+  animation-delay: -3s;
+}
+
+.question-four {
+  bottom: 30%;
+  right: 4%;
+  --question-tone: var(--medium);
+  animation-duration: 12s;
+  animation-delay: -8s;
+}
+
+.question-five {
+  top: 48%;
+  left: 4%;
+  --question-tone: var(--easy);
+  animation-duration: 10s;
+  animation-delay: -6s;
 }
 
 .dsa-orbit {
@@ -994,6 +1094,39 @@ body::after {
   }
 }
 
+@keyframes questionFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-1deg);
+  }
+
+  35% {
+    transform: translate3d(18px, -18px, 0) rotate(1deg);
+  }
+
+  70% {
+    transform: translate3d(-12px, 14px, 0) rotate(0deg);
+  }
+}
+
+@keyframes questionScan {
+  0%,
+  54% {
+    opacity: 0;
+    transform: translateX(-90%);
+  }
+
+  68% {
+    opacity: 1;
+  }
+
+  86%,
+  100% {
+    opacity: 0;
+    transform: translateX(90%);
+  }
+}
+
 @keyframes badgeGlow {
   0%,
   100% {
@@ -1136,6 +1269,7 @@ body::after {
   }
 
   .algo-pill,
+  .floating-question,
   .dsa-orbit,
   .linked-list-path,
   .stack-bars {
