@@ -1,7 +1,5 @@
 import React, { useMemo, useState } from "react";
 
-const DEV_UPSTREAM_API = "https://leetcode-api-faisalshohag.vercel.app";
-
 function toNumber(value, fallback = 0) {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : fallback;
@@ -10,6 +8,56 @@ function toNumber(value, fallback = 0) {
 function calculatePercent(solved, total) {
   if (!total || total <= 0) return 0;
   return Math.round((solved / total) * 100);
+}
+
+function dayKeyFromTimestamp(timestamp) {
+  const date = new Date(toNumber(timestamp) * 1000);
+  return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+}
+
+function getCalendarStats(calendar = {}) {
+  const activeDays = Object.keys(calendar)
+    .filter((timestamp) => toNumber(calendar[timestamp]) > 0)
+    .map(dayKeyFromTimestamp)
+    .filter(Number.isFinite)
+    .sort((first, second) => first - second);
+
+  if (!activeDays.length) {
+    return {
+      activeDays: 0,
+      latestStreak: 0,
+      longestStreak: 0,
+      latestActiveDate: "N/A",
+      totalCalendarSubmissions: 0
+    };
+  }
+
+  let longestStreak = 1;
+  let currentRun = 1;
+
+  for (let index = 1; index < activeDays.length; index += 1) {
+    const gap = Math.round((activeDays[index] - activeDays[index - 1]) / 86400000);
+    currentRun = gap === 1 ? currentRun + 1 : 1;
+    longestStreak = Math.max(longestStreak, currentRun);
+  }
+
+  const latestActiveDate = new Date(activeDays[activeDays.length - 1]).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  });
+
+  return {
+    activeDays: activeDays.length,
+    latestStreak: currentRun,
+    longestStreak,
+    latestActiveDate,
+    totalCalendarSubmissions: Object.values(calendar).reduce((sum, count) => sum + toNumber(count), 0)
+  };
+}
+
+function getSubmissionCount(submissions = [], difficulty = "All") {
+  return toNumber(submissions.find((item) => item.difficulty === difficulty)?.submissions);
 }
 
 function Circle({ label, percent, type }) {
@@ -29,6 +77,17 @@ function StatCard({ value, label, tone = "default", detail }) {
       <strong>{value}</strong>
       <span>{label}</span>
       {detail && <small>{detail}</small>}
+    </article>
+  );
+}
+
+function AchievementCard({ value, label, detail, tone = "default" }) {
+  return (
+    <article className={`achievement tone-${tone}`}>
+      <div className="achievement-mark" aria-hidden="true" />
+      <strong>{value}</strong>
+      <span>{label}</span>
+      <small>{detail}</small>
     </article>
   );
 }
@@ -81,10 +140,62 @@ export default function App() {
     ];
   }, [data, progress]);
 
+  const achievements = useMemo(() => {
+    if (!data) return [];
+
+    const streakTone = data.latestStreak >= 50 ? "streak" : "ranking";
+    const streakDetail =
+      data.latestStreak >= 50
+        ? "50 day streak unlocked"
+        : `Best streak ${data.longestStreak} days`;
+
+    return [
+      {
+        value: `${data.badges.length}`,
+        label: "LeetCode Badges",
+        detail: data.activeBadge ? `Active: ${data.activeBadge.displayName}` : "Profile achievements",
+        tone: "streak"
+      },
+      {
+        value: `${data.latestStreak}`,
+        label: "Day Streak",
+        detail: streakDetail,
+        tone: streakTone
+      },
+      {
+        value: `${data.longestStreak}`,
+        label: "Longest Streak",
+        detail: `Latest active ${data.latestActiveDate}`,
+        tone: "streak"
+      },
+      {
+        value: `${data.activeDays}`,
+        label: "Active Days",
+        detail: `${data.totalCalendarSubmissions} calendar submissions`,
+        tone: "contribution"
+      },
+      {
+        value: `${data.acceptanceRate}%`,
+        label: "Acceptance",
+        detail: `${data.acceptedSubmissions}/${data.totalSubmissions} accepted`,
+        tone: "easy"
+      },
+      {
+        value: `${data.recentAccepted}`,
+        label: "Recent Accepted",
+        detail: "From latest submissions",
+        tone: "medium"
+      },
+      {
+        value: `${data.reputation}`,
+        label: "Reputation",
+        detail: "Profile reputation",
+        tone: "hard"
+      }
+    ];
+  }, [data]);
+
   function getApiUrl(leetcodeUsername) {
-    if (import.meta.env.DEV) {
-      return `${DEV_UPSTREAM_API}/${encodeURIComponent(leetcodeUsername)}`;
-    }
     return `/api/leetcode?username=${encodeURIComponent(leetcodeUsername)}`;
   }
 
@@ -126,6 +237,7 @@ export default function App() {
       }
 
       const normalized = {
+        username: trimmed,
         easySolved: toNumber(payload.easySolved),
         mediumSolved: toNumber(payload.mediumSolved),
         hardSolved: toNumber(payload.hardSolved),
@@ -134,8 +246,19 @@ export default function App() {
         totalHard: toNumber(payload.totalHard),
         totalSolved: toNumber(payload.totalSolved),
         ranking: payload.ranking ?? "N/A",
-        contributionPoint: toNumber(payload.contributionPoint)
+        contributionPoint: toNumber(payload.contributionPoint),
+        reputation: toNumber(payload.reputation),
+        totalSubmissions: getSubmissionCount(payload.totalSubmissions),
+        acceptedSubmissions: getSubmissionCount(payload.matchedUserStats?.acSubmissionNum),
+        recentAccepted: Array.isArray(payload.recentSubmissions)
+          ? payload.recentSubmissions.filter((submission) => submission.statusDisplay === "Accepted").length
+          : 0,
+        badges: Array.isArray(payload.badges) ? payload.badges : [],
+        activeBadge: payload.activeBadge || null,
+        ...getCalendarStats(payload.submissionCalendar)
       };
+
+      normalized.acceptanceRate = calculatePercent(normalized.acceptedSubmissions, normalized.totalSubmissions);
 
       setData(normalized);
       setStatus(`Showing results for ${trimmed}.`);
@@ -153,9 +276,29 @@ export default function App() {
       <div className="animated-bg" aria-hidden="true">
         <span className="beam beam-one" />
         <span className="beam beam-two" />
-        <span className="code-rain rain-one">while solve rank++</span>
-        <span className="code-rain rain-two">O(log n)</span>
-        <span className="code-rain rain-three">accepted</span>
+        <span className="code-rain rain-one">two pointers</span>
+        <span className="code-rain rain-two">dp[i] = max()</span>
+        <span className="code-rain rain-three">binary search</span>
+        <span className="algo-pill pill-one">HashMap</span>
+        <span className="algo-pill pill-two">Stack</span>
+        <span className="algo-pill pill-three">Graph BFS</span>
+        <div className="dsa-orbit orbit-one">
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="linked-list-path">
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="stack-bars">
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
       </div>
 
       <header className="hero container">
@@ -206,7 +349,7 @@ export default function App() {
             <section className="profile-summary" aria-label="Overall profile stats">
               <div>
                 <p className="eyebrow">Profile Ready</p>
-                <h2>{data.totalSolved} problems solved</h2>
+                <h2>{data.username} solved {data.totalSolved} problems</h2>
               </div>
               <div className="rank-chip">
                 <span>Rank</span>
@@ -233,6 +376,37 @@ export default function App() {
               <StatCard value={data.totalSolved} label="Total Solved" tone="total" detail="All difficulties" />
               <StatCard value={data.ranking} label="Global Ranking" tone="ranking" detail="LeetCode position" />
               <StatCard value={data.contributionPoint} label="Contribution" tone="contribution" detail="Community points" />
+            </section>
+
+            <section className="achievements-panel" aria-label="LeetCode achievements">
+              <div className="section-heading">
+                <p className="eyebrow">Achievements</p>
+                <h3>Streaks, consistency, and profile wins</h3>
+              </div>
+              {data.badges.length > 0 && (
+                <div className="badge-rack" aria-label="LeetCode badges">
+                  {data.badges.map((badge) => (
+                    <article className="badge-card" key={badge.id || badge.displayName}>
+                      {badge.icon && <img src={badge.icon} alt="" loading="lazy" />}
+                      <div>
+                        <strong>{badge.displayName}</strong>
+                        <span>{badge.creationDate ? `Earned ${badge.creationDate}` : "LeetCode badge"}</span>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+              <div className="achievements-grid">
+                {achievements.map((achievement) => (
+                  <AchievementCard
+                    key={achievement.label}
+                    value={achievement.value}
+                    label={achievement.label}
+                    detail={achievement.detail}
+                    tone={achievement.tone}
+                  />
+                ))}
+              </div>
             </section>
           </section>
         )}

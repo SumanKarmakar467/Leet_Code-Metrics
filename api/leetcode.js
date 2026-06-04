@@ -1,8 +1,51 @@
 const UPSTREAM_API = "https://leetcode-api-faisalshohag.vercel.app";
+const LEETCODE_GRAPHQL_API = "https://leetcode.com/graphql";
+
+const BADGES_QUERY = `
+  query userBadges($username: String!) {
+    matchedUser(username: $username) {
+      badges {
+        id
+        displayName
+        icon
+        creationDate
+      }
+      activeBadge {
+        id
+        displayName
+        icon
+      }
+    }
+  }
+`;
 
 function toNumber(value, fallback = 0) {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+async function fetchLeetCodeBadges(username) {
+  try {
+    const response = await fetch(LEETCODE_GRAPHQL_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: BADGES_QUERY, variables: { username } })
+    });
+
+    if (!response.ok) {
+      return { badges: [], activeBadge: null };
+    }
+
+    const payload = await response.json();
+    const user = payload?.data?.matchedUser;
+
+    return {
+      badges: Array.isArray(user?.badges) ? user.badges : [],
+      activeBadge: user?.activeBadge || null
+    };
+  } catch {
+    return { badges: [], activeBadge: null };
+  }
 }
 
 export default async function handler(req, res) {
@@ -16,7 +59,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch(`${UPSTREAM_API}/${encodeURIComponent(username)}`);
+    const [response, badgeData] = await Promise.all([
+      fetch(`${UPSTREAM_API}/${encodeURIComponent(username)}`),
+      fetchLeetCodeBadges(username)
+    ]);
 
     if (!response.ok) {
       return res.status(response.status).json({ message: "Failed to fetch profile." });
@@ -35,7 +81,14 @@ export default async function handler(req, res) {
           (toNumber(raw?.easySolved) + toNumber(raw?.mediumSolved) + toNumber(raw?.hardSolved))
       ),
       ranking: raw?.ranking ?? "N/A",
-      contributionPoint: toNumber(raw?.contributionPoint ?? raw?.contributionPoints ?? raw?.contribution)
+      contributionPoint: toNumber(raw?.contributionPoint ?? raw?.contributionPoints ?? raw?.contribution),
+      reputation: toNumber(raw?.reputation),
+      totalSubmissions: raw?.totalSubmissions || [],
+      matchedUserStats: raw?.matchedUserStats || null,
+      recentSubmissions: raw?.recentSubmissions || [],
+      submissionCalendar: raw?.submissionCalendar || {},
+      badges: badgeData.badges,
+      activeBadge: badgeData.activeBadge
     };
 
     const hasAnyProgressData =
