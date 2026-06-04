@@ -15,17 +15,20 @@ function calculatePercent(solved, total) {
 function Circle({ label, percent, type }) {
   return (
     <article className={`circle ${type}`}>
-      <span style={{ "--progress-degree": `${percent}%` }}>{percent}%</span>
+      <span style={{ "--progress-degree": `${percent}%` }}>
+        <strong>{percent}%</strong>
+      </span>
       <p>{label}</p>
     </article>
   );
 }
 
-function StatCard({ value, label, tone = "default" }) {
+function StatCard({ value, label, tone = "default", detail }) {
   return (
     <article className={`card tone-${tone}`}>
-      {value}
+      <strong>{value}</strong>
       <span>{label}</span>
+      {detail && <small>{detail}</small>}
     </article>
   );
 }
@@ -47,6 +50,36 @@ export default function App() {
       hard: calculatePercent(data.hardSolved, data.totalHard)
     };
   }, [data]);
+
+  const solvedBreakdown = useMemo(() => {
+    if (!data) return [];
+    return [
+      {
+        key: "easy",
+        label: "Easy",
+        solved: data.easySolved,
+        total: data.totalEasy,
+        percent: progress.easy,
+        tone: "easy"
+      },
+      {
+        key: "medium",
+        label: "Medium",
+        solved: data.mediumSolved,
+        total: data.totalMedium,
+        percent: progress.medium,
+        tone: "medium"
+      },
+      {
+        key: "hard",
+        label: "Hard",
+        solved: data.hardSolved,
+        total: data.totalHard,
+        percent: progress.hard,
+        tone: "hard"
+      }
+    ];
+  }, [data, progress]);
 
   function getApiUrl(leetcodeUsername) {
     if (import.meta.env.DEV) {
@@ -117,13 +150,25 @@ export default function App() {
 
   return (
     <main className="page">
-      <h1 className="page-title">LeetMetric Dashboard</h1>
+      <div className="animated-bg" aria-hidden="true">
+        <span className="beam beam-one" />
+        <span className="beam beam-two" />
+        <span className="code-rain rain-one">while solve rank++</span>
+        <span className="code-rain rain-two">O(log n)</span>
+        <span className="code-rain rain-three">accepted</span>
+      </div>
+
+      <header className="hero container">
+        <p className="eyebrow">LeetCode Analytics</p>
+        <h1 className="page-title">LeetMetric Dashboard</h1>
+        <p className="hero-copy">A sharp animated command center for solved counts, difficulty progress, rank, and contribution points.</p>
+      </header>
 
       <section className="dashboard container">
         <header className="dashboard-header">
           <div>
-            <p className="eyebrow">LeetCode Analytics</p>
-            <p className="subhead">Track solved counts, difficulty progress, and ranking in one place.</p>
+            <p className="eyebrow">Profile Lookup</p>
+            <p className="subhead">Enter a username and watch the dashboard light up with live LeetCode metrics.</p>
           </div>
         </header>
 
@@ -141,7 +186,7 @@ export default function App() {
               onChange={(event) => setUsername(event.target.value)}
             />
             <button id="search-btn" type="submit" disabled={isLoading}>
-              {isLoading ? "Searching..." : "Search"}
+              <span>{isLoading ? "Searching..." : "Search"}</span>
             </button>
           </div>
           <p className={`status-msg ${isError ? "error" : ""}`} role="status" aria-live="polite">
@@ -149,30 +194,49 @@ export default function App() {
           </p>
         </form>
 
+        {isLoading && (
+          <section className="loading-panel" aria-label="Loading profile">
+            <span />
+            <p>Compiling profile metrics...</p>
+          </section>
+        )}
+
         {data && (
-          <>
+          <section className="results-shell">
+            <section className="profile-summary" aria-label="Overall profile stats">
+              <div>
+                <p className="eyebrow">Profile Ready</p>
+                <h2>{data.totalSolved} problems solved</h2>
+              </div>
+              <div className="rank-chip">
+                <span>Rank</span>
+                <strong>{data.ranking}</strong>
+              </div>
+            </section>
+
             <section className="progress" aria-label="Difficulty progress circles">
-              <Circle label="Easy" percent={progress.easy} type="easy-progress" />
-              <Circle label="Medium" percent={progress.medium} type="medium-progress" />
-              <Circle label="Hard" percent={progress.hard} type="hard-progress" />
+              {solvedBreakdown.map((item) => (
+                <article className={`difficulty-card tone-${item.tone}`} key={item.key}>
+                  <Circle label={item.label} percent={item.percent} type={`${item.tone}-progress`} />
+                  <div className="difficulty-meta">
+                    <strong>
+                      {item.solved}/{item.total}
+                    </strong>
+                    <span>Solved</span>
+                  </div>
+                  <div className="progress-line" style={{ "--line-progress": `${item.percent}%` }} />
+                </article>
+              ))}
             </section>
 
             <section className="metrics-grid" aria-label="LeetCode statistics cards">
-              <StatCard value={`${data.easySolved}/${data.totalEasy}`} label="Easy Solved" tone="easy" />
-              <StatCard value={data.mediumSolved} label="Medium Solved" tone="medium" />
-              <StatCard value={data.hardSolved} label="Hard Solved" tone="hard" />
+              <StatCard value={data.totalSolved} label="Total Solved" tone="total" detail="All difficulties" />
+              <StatCard value={data.ranking} label="Global Ranking" tone="ranking" detail="LeetCode position" />
+              <StatCard value={data.contributionPoint} label="Contribution" tone="contribution" detail="Community points" />
             </section>
-          </>
+          </section>
         )}
       </section>
-
-      {data && (
-        <section className="external-summary container" aria-label="Overall profile stats">
-          <StatCard value={data.totalSolved} label="Total Solved" tone="total" />
-          <StatCard value={data.ranking} label="Ranking" tone="ranking" />
-          <StatCard value={data.contributionPoint} label="Contribution" tone="contribution" />
-        </section>
-      )}
     </main>
   );
 }
