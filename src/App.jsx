@@ -49,7 +49,7 @@ function getCalendarStats(calendar = {}) {
 
   return {
     activeDays: activeDays.length,
-    latestStreak: currentRn,
+    latestStreak: currentRun,
     longestStreak,
     latestActiveDate,
     totalCalendarSubmissions: Object.values(calendar).reduce((sum, count) => sum + toNumber(count), 0)
