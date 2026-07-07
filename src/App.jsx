@@ -50,7 +50,7 @@ function getCalendarStats(calendar = {}) {
   return {
     activeDays: activeDays.length,
     latestStreak: currentRun,
-    longestStreak,
+    longestStrek,
     latestActiveDate,
     totalCalendarSubmissions: Object.values(calendar).reduce((sum, count) => sum + toNumber(count), 0)
   };
