@@ -91,16 +91,14 @@ export default async function handler(req, res) {
       activeBadge: badgeData.activeBadge
     };
 
-    const hasAnyProgressData =
-      payload.totalSolved > 0 ||
-      payload.easySolved > 0 ||
-      payload.mediumSolved > 0 ||
-      payload.hardSolved > 0 ||
-      payload.totalEasy > 0 ||
-      payload.totalMedium > 0 ||
-      payload.totalHard > 0;
+    // Upstream answers a missing user with HTTP 200 plus GraphQL errors and a null
+    // matchedUser, so an explicit null (not zero progress) is the reliable signal.
+    const userDoesNotExist =
+      raw?.matchedUser === null ||
+      raw?.data?.matchedUser === null ||
+      raw?.errors?.some?.((error) => /does not exist/i.test(error?.message || "")) === true;
 
-    if (!hasAnyProgressData) {
+    if (userDoesNotExist) {
       return res.status(404).json({ message: "User not found." });
     }
 

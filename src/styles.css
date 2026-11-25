@@ -1,10 +1,9 @@
 :root {
-  --bg: #07090f;
-  --surface: rgba(13, 18, 29, 0.78);
-  --surface-strong: rgba(22, 28, 42, 0.9);
+  --bg: #06080e;
   --text: #f8fafc;
-  --muted: #aeb9ca;
-  --stroke: rgba(255, 255, 255, 0.16);
+  --muted: #a6b2c6;
+  --stroke: rgba(255, 255, 255, 0.13);
+  --stroke-strong: rgba(255, 255, 255, 0.24);
   --accent: #ffa116;
   --accent-2: #ff7a00;
   --cyan: #22d3ee;
@@ -12,7 +11,9 @@
   --easy: #00d8b7;
   --medium: #ffc01e;
   --hard: #ff426f;
-  --radius: 18px;
+  --radius: 20px;
+  --radius-sm: 14px;
+  --gap: 1rem;
 }
 
 * {
@@ -62,17 +63,17 @@ body::after {
 .page {
   position: relative;
   min-height: 100vh;
-  padding: clamp(1.1rem, 3vw, 2.4rem);
+  padding: clamp(1.25rem, 3vw, 2.6rem) clamp(1rem, 2.4vw, 2rem) clamp(2rem, 4vw, 3rem);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: clamp(1.1rem, 2.4vw, 1.6rem);
   isolation: isolate;
 }
 
 .container {
-  width: min(980px, 100%);
+  width: min(1080px, 100%);
 }
 
 .animated-bg {
@@ -430,8 +431,8 @@ body::after {
 
 .stack-bars {
   position: absolute;
-  left: 20%;
-  top: 28%;
+  left: 4%;
+  top: 58%;
   width: 72px;
   display: grid;
   gap: 8px;
@@ -482,11 +483,12 @@ body::after {
 }
 
 .hero-copy {
-  width: min(680px, 100%);
+  width: min(720px, 100%);
   margin: 0.8rem auto 0;
   color: var(--muted);
   font-size: clamp(0.95rem, 1.8vw, 1.08rem);
   line-height: 1.6;
+  text-wrap: balance;
 }
 
 .dashboard {
@@ -501,7 +503,7 @@ body::after {
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
   padding: clamp(1rem, 2.6vw, 2rem);
   display: grid;
-  gap: 1.2rem;
+  gap: clamp(1rem, 2vw, 1.4rem);
   backdrop-filter: blur(18px);
   animation: riseIn 0.75s 0.1s ease both;
 }
@@ -518,13 +520,14 @@ body::after {
 .dashboard-header,
 .user-container,
 .results-shell,
-.loading-panel {
+.skeleton-shell {
   position: relative;
   z-index: 1;
 }
 
 .dashboard-header {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
 }
@@ -628,43 +631,63 @@ body::after {
   color: #fb7185;
 }
 
-.loading-panel {
-  min-height: 78px;
+.skeleton-shell {
   display: grid;
-  place-items: center;
-  gap: 0.65rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
+  gap: var(--gap);
+  animation: riseIn 0.4s ease both;
 }
 
-.loading-panel span {
-  width: min(320px, 80%);
-  height: 8px;
+.skeleton {
+  position: relative;
   overflow: hidden;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.loading-panel span::before {
-  display: block;
-  width: 38%;
-  height: 100%;
-  border-radius: inherit;
+.skeleton::after {
+  position: absolute;
+  inset: 0;
   content: "";
-  background: linear-gradient(90deg, var(--accent), var(--cyan));
-  animation: loadingSlide 1s ease-in-out infinite alternate;
+  background: linear-gradient(100deg, transparent 24%, rgba(255, 255, 255, 0.14) 50%, transparent 76%);
+  transform: translateX(-100%);
+  animation: shimmer 1.5s ease-in-out infinite;
 }
 
-.loading-panel p {
+.skeleton-summary {
+  height: 98px;
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+.skeleton-ring {
+  height: 236px;
+}
+
+.skeleton-card {
+  height: 132px;
+}
+
+.skeleton-note {
   margin: 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+}
+
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
 }
 
 .results-shell {
   display: grid;
-  gap: 1rem;
+  gap: var(--gap);
   animation: resultPop 0.65s ease both;
 }
 
@@ -672,24 +695,29 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 16px;
+  gap: clamp(0.9rem, 2vw, 1.5rem);
+  padding: clamp(1rem, 2vw, 1.35rem);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-sm);
   background:
-    linear-gradient(135deg, rgba(255, 161, 22, 0.14), transparent 45%),
-    rgba(255, 255, 255, 0.045);
+    linear-gradient(135deg, rgba(255, 161, 22, 0.16), transparent 52%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
 }
 
 .profile-summary h2 {
   margin: 0;
-  font-size: clamp(1.25rem, 2.8vw, 2rem);
+  font-size: clamp(1.25rem, 2.8vw, 1.95rem);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
 }
 
 .rank-chip {
-  min-width: 150px;
-  padding: 0.75rem 1rem;
-  border-radius: 14px;
+  display: grid;
+  gap: 0.2rem;
+  align-content: center;
+  min-width: 172px;
+  padding: 0.75rem 1.05rem;
+  border-radius: var(--radius-sm);
   border: 1px solid rgba(139, 92, 246, 0.42);
   background: rgba(139, 92, 246, 0.14);
   text-align: right;
@@ -715,7 +743,8 @@ body::after {
 .progress {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.85rem;
+  align-items: stretch;
+  gap: var(--gap);
 }
 
 .difficulty-card,
@@ -729,12 +758,14 @@ body::after {
 }
 
 .difficulty-card {
-  min-height: 210px;
-  padding: 1rem;
-  display: grid;
-  place-items: center;
-  gap: 0.75rem;
-  animation: cardLift 0.6s ease both;
+  min-height: 236px;
+  padding: 1.15rem 1.05rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  animation: cardLift 0.6s ease backwards;
 }
 
 .difficulty-card:nth-child(2) {
@@ -779,17 +810,18 @@ body::after {
 .circle {
   position: relative;
   z-index: 1;
-  min-height: 118px;
+  min-height: 128px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.6rem;
   text-align: center;
 }
 
 .circle span {
-  width: 98px;
-  height: 98px;
+  width: 104px;
+  height: 104px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -797,7 +829,6 @@ body::after {
   background:
     radial-gradient(circle at center, rgba(8, 12, 21, 0.95) 57%, transparent 58%),
     conic-gradient(var(--ring-color) var(--progress-degree, 0%), var(--track-color) 0%);
-  margin-bottom: 0.55rem;
   box-shadow: 0 0 32px rgba(var(--tone-rgb), 0.25);
   animation: ringPulse 2.8s ease-in-out infinite;
 }
@@ -841,7 +872,9 @@ body::after {
 
 .difficulty-meta strong {
   display: block;
-  font-size: 1.25rem;
+  font-size: 1.35rem;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
 }
 
 .difficulty-meta span {
@@ -873,49 +906,52 @@ body::after {
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.85rem;
+  align-items: stretch;
+  gap: var(--gap);
 }
 
 .achievements-panel {
   display: grid;
-  gap: 0.85rem;
-  padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 16px;
+  gap: var(--gap);
+  padding: clamp(1rem, 2vw, 1.35rem);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-sm);
   background:
-    linear-gradient(135deg, rgba(34, 211, 238, 0.08), transparent 44%),
+    linear-gradient(135deg, rgba(34, 211, 238, 0.09), transparent 46%),
     rgba(255, 255, 255, 0.035);
 }
 
 .section-heading h3 {
   margin: 0;
   font-size: clamp(1.1rem, 2.4vw, 1.45rem);
+  letter-spacing: -0.01em;
 }
 
 .badge-rack {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(196px, 1fr));
+  align-items: stretch;
+  gap: var(--gap);
 }
 
 .badge-card {
   position: relative;
   overflow: hidden;
-  min-height: 112px;
-  padding: 0.9rem;
+  min-height: 96px;
+  padding: 0.85rem;
   display: grid;
-  grid-template-columns: 68px minmax(0, 1fr);
+  grid-template-columns: 56px minmax(0, 1fr);
   align-items: center;
-  gap: 0.85rem;
-  border: 1px solid rgba(255, 161, 22, 0.34);
-  border-radius: 16px;
+  gap: 0.8rem;
+  border: 1px solid rgba(255, 161, 22, 0.3);
+  border-radius: var(--radius-sm);
   background:
-    radial-gradient(circle at 20% 50%, rgba(255, 161, 22, 0.22), transparent 34%),
+    radial-gradient(circle at 18% 50%, rgba(255, 161, 22, 0.2), transparent 38%),
     rgba(7, 10, 18, 0.5);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     0 18px 42px rgba(255, 161, 22, 0.08);
-  animation: badgeGlow 3.6s ease-in-out infinite;
+  animation: badgeGlow 3.6s ease-in-out infinite, cardLift 0.55s ease backwards;
 }
 
 .badge-card::after {
@@ -930,10 +966,10 @@ body::after {
 .badge-card img {
   position: relative;
   z-index: 1;
-  width: 64px;
-  height: 64px;
+  width: 54px;
+  height: 54px;
   object-fit: contain;
-  filter: drop-shadow(0 0 18px rgba(255, 161, 22, 0.28));
+  filter: drop-shadow(0 0 16px rgba(255, 161, 22, 0.28));
 }
 
 .badge-card div,
@@ -963,22 +999,27 @@ body::after {
 .achievements-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.85rem;
+  align-items: stretch;
+  gap: var(--gap);
 }
 
 .achievement {
   position: relative;
   overflow: hidden;
-  min-height: 132px;
-  padding: 1rem;
+  min-height: 152px;
+  padding: 1.05rem 1.1rem;
   display: grid;
   align-content: center;
-  gap: 0.26rem;
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 16px;
-  background: rgba(7, 10, 18, 0.48);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
-  animation: cardLift 0.6s 0.24s ease both;
+  gap: 0.3rem;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-sm);
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015)),
+    rgba(7, 10, 18, 0.5);
+  box-shadow:
+    inset 2px 0 0 var(--tone, rgba(255, 255, 255, 0.3)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  animation: cardLift 0.58s ease backwards;
 }
 
 .achievement::before {
@@ -1012,8 +1053,11 @@ body::after {
 }
 
 .achievement strong {
-  font-size: clamp(1.35rem, 3vw, 2rem);
+  font-size: clamp(1.4rem, 3vw, 2.05rem);
   line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--tone, var(--text));
 }
 
 .achievement span {
@@ -1030,12 +1074,13 @@ body::after {
 }
 
 .card {
-  min-height: 118px;
-  padding: 1rem;
+  min-height: 132px;
+  padding: 1.1rem;
   display: grid;
   align-content: center;
+  gap: 0.1rem;
   text-align: center;
-  animation: cardLift 0.6s 0.18s ease both;
+  animation: cardLift 0.6s ease backwards;
 }
 
 .card strong,
@@ -1046,8 +1091,11 @@ body::after {
 }
 
 .card strong {
-  font-size: clamp(1.25rem, 2.8vw, 1.75rem);
+  font-size: clamp(1.3rem, 2.8vw, 1.85rem);
   line-height: 1.1;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+  color: var(--tone, var(--text));
 }
 
 .card span {
@@ -1063,23 +1111,97 @@ body::after {
 }
 
 .card.tone-total {
+  --tone: var(--accent);
   --tone-glow: rgba(255, 161, 22, 0.32);
   border-color: rgba(255, 161, 22, 0.3);
 }
 
 .card.tone-ranking {
+  --tone: var(--violet);
   --tone-glow: rgba(139, 92, 246, 0.34);
   border-color: rgba(139, 92, 246, 0.34);
 }
 
 .card.tone-contribution {
+  --tone: var(--cyan);
   --tone-glow: rgba(34, 211, 238, 0.3);
   border-color: rgba(34, 211, 238, 0.34);
 }
 
 .tone-streak {
+  --tone: var(--accent);
   --tone-glow: rgba(255, 161, 22, 0.36);
   border-color: rgba(255, 161, 22, 0.36);
+}
+
+.tone-ranking {
+  --tone: var(--violet);
+  --tone-glow: rgba(139, 92, 246, 0.34);
+}
+
+.tone-contribution {
+  --tone: var(--cyan);
+  --tone-glow: rgba(34, 211, 238, 0.3);
+}
+
+.difficulty-card,
+.card,
+.achievement,
+.badge-card {
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.difficulty-card:hover,
+.card:hover,
+.achievement:hover {
+  transform: translateY(-4px);
+  border-color: var(--stroke-strong);
+  box-shadow:
+    0 22px 46px rgba(0, 0, 0, 0.4),
+    inset 2px 0 0 var(--tone, rgba(255, 255, 255, 0.28));
+}
+
+.achievement:nth-child(2) {
+  animation-delay: 0.06s;
+}
+
+.achievement:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+.achievement:nth-child(4) {
+  animation-delay: 0.18s;
+}
+
+.achievement:nth-child(5) {
+  animation-delay: 0.24s;
+}
+
+.achievement:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
+.achievement:nth-child(7) {
+  animation-delay: 0.36s;
+}
+
+/* A lone card in the last row becomes a full-width summary strip instead of
+   leaving two thirds of the row empty. */
+.achievements-grid > .achievement:last-child:nth-child(3n + 1) {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.9rem;
+  min-height: 108px;
+}
+
+.achievements-grid > .achievement:last-child:nth-child(3n + 1) small {
+  margin-left: auto;
+  font-size: 0.86rem;
 }
 
 @keyframes gridDrift {
@@ -1277,16 +1399,6 @@ body::after {
   }
 }
 
-@keyframes loadingSlide {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(168%);
-  }
-}
-
 @keyframes cardLift {
   from {
     transform: translateY(16px);
@@ -1320,14 +1432,36 @@ body::after {
   }
 }
 
+/* Below this width the content column leaves too little room for the large
+   floating cards, which would sit behind the hero text. */
+@media (max-width: 1700px) {
+  .floating-question,
+  .answer-snippet {
+    visibility: hidden;
+    opacity: 0;
+    animation: none;
+  }
+}
+
 @media (max-width: 780px) {
+  .achievements-grid > .achievement:last-child:nth-child(3n + 1) {
+    display: grid;
+    align-content: center;
+    gap: 0.3rem;
+  }
+
+  .achievements-grid > .achievement:last-child:nth-child(3n + 1) small {
+    margin-left: 0;
+  }
+
   .page {
     justify-content: flex-start;
   }
 
   .progress,
   .metrics-grid,
-  .achievements-grid {
+  .achievements-grid,
+  .skeleton-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1338,7 +1472,12 @@ body::after {
 
   .rank-chip {
     width: 100%;
+    min-width: 0;
     text-align: left;
+  }
+
+  .skeleton-ring {
+    height: 200px;
   }
 }
 
@@ -1352,7 +1491,12 @@ body::after {
   }
 
   .difficulty-card {
-    min-height: 190px;
+    min-height: 200px;
+    align-items: stretch;
+  }
+
+  .circle {
+    align-items: center;
   }
 
   .algo-pill,

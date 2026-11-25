@@ -1,8 +1,49 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 function toNumber(value, fallback = 0) {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+function formatCount(value) {
+  return Number(value).toLocaleString("en-US");
+}
+
+function useAnimatedNumber(target, duration = 950) {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    const end = toNumber(target);
+    const framesSuspended = typeof document !== "undefined" && document.hidden;
+
+    // Background tabs pause requestAnimationFrame, so never leave a counter at 0.
+    if (!end || framesSuspended) {
+      setValue(end);
+      return undefined;
+    }
+
+    let frame = 0;
+    const start = performance.now();
+    const settle = setTimeout(() => setValue(end), duration + 150);
+
+    const tick = (now) => {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(end * eased));
+      if (progress < 1) {
+        frame = requestAnimationFrame(tick);
+      }
+    };
+
+    frame = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(settle);
+    };
+  }, [target, duration]);
+
+  return value;
 }
 
 function calculatePercent(solved, total) {
@@ -41,7 +82,14 @@ function getCalendarStats(calendar = {}) {
     longestStreak = Math.max(longestStreak, currentRun);
   }
 
-  const latestActiveDate = new Date(activeDays[activeDays.length - 1]).toLocaleDateString(undefined, {
+  const lastActiveDay = activeDays[activeDays.length - 1];
+  const todayKey = dayKeyFromTimestamp(Date.now() / 1000);
+  const daysSinceLastActive = Math.round((todayKey - lastActiveDay) / 86400000);
+
+  // A current streak only holds if the profile was active today or yesterday.
+  const latestStreak = daysSinceLastActive <= 1 ? currentRun : 0;
+
+  const latestActiveDate = new Date(lastActiveDay).toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
     year: "numeric"
@@ -49,7 +97,7 @@ function getCalendarStats(calendar = {}) {
 
   return {
     activeDays: activeDays.length,
-    latestStreak: currentRun,
+    latestStreak,
     longestStreak,
     latestActiveDate,
     totalCalendarSubmissions: Object.values(calendar).reduce((sum, count) => sum + toNumber(count), 0)
@@ -61,20 +109,32 @@ function getSubmissionCount(submissions = [], difficulty = "All") {
 }
 
 function Circle({ label, percent, type }) {
+  const animated = useAnimatedNumber(percent, 1100);
+
   return (
     <article className={`circle ${type}`}>
-      <span style={{ "--progress-degree": `${percent}%` }}>
-        <strong>{percent}%</strong>
+      <span style={{ "--progress-degree": `${animated}%` }}>
+        <strong>{animated}%</strong>
       </span>
       <p>{label}</p>
     </article>
   );
 }
 
+function AnimatedValue({ value }) {
+  const text = String(value);
+  const isNumeric = /^-?\d+$/.test(text);
+  const animated = useAnimatedNumber(isNumeric ? Number(text) : 0);
+
+  return <>{isNumeric ? formatCount(animated) : text}</>;
+}
+
 function StatCard({ value, label, tone = "default", detail }) {
   return (
     <article className={`card tone-${tone}`}>
-      <strong>{value}</strong>
+      <strong>
+        <AnimatedValue value={value} />
+      </strong>
       <span>{label}</span>
       {detail && <small>{detail}</small>}
     </article>
@@ -85,7 +145,9 @@ function AchievementCard({ value, label, detail, tone = "default" }) {
   return (
     <article className={`achievement tone-${tone}`}>
       <div className="achievement-mark" aria-hidden="true" />
-      <strong>{value}</strong>
+      <strong>
+        <AnimatedValue value={value} />
+      </strong>
       <span>{label}</span>
       <small>{detail}</small>
     </article>
@@ -385,9 +447,19 @@ for (int i = 0; i < nums.size(); i++) {
         </form>
 
         {isLoading && (
-          <section className="loading-panel" aria-label="Loading profile">
-            <span />
-            <p>Compiling profile metrics...</p>
+          <section className="skeleton-shell" aria-label="Loading profile" aria-busy="true">
+            <div className="skeleton skeleton-summary" />
+            <div className="skeleton-grid">
+              <div className="skeleton skeleton-ring" />
+              <div className="skeleton skeleton-ring" />
+              <div className="skeleton skeleton-ring" />
+            </div>
+            <div className="skeleton-grid">
+              <div className="skeleton skeleton-card" />
+              <div className="skeleton skeleton-card" />
+              <div className="skeleton skeleton-card" />
+            </div>
+            <p className="skeleton-note">Fetching live LeetCode metrics…</p>
           </section>
         )}
 
